@@ -18,9 +18,9 @@ export default function Layout() {
     <div className="min-h-screen pb-20 md:pb-0">
       {/* Cabecera */}
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
+        <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3">
           <NavLink to="/" className="flex items-center gap-2">
-            <img src="/favicon.svg" alt="" className="h-8 w-8" />
+            <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-8 w-8" />
             <span className="text-lg font-bold text-teal-800">ProfePapeleo</span>
           </NavLink>
           <nav className="ml-6 hidden gap-5 text-sm md:flex">
