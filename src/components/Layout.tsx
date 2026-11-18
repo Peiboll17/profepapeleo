@@ -5,7 +5,9 @@ const ENLACES = [
   { to: '/', etiqueta: 'Inicio', icono: '🏠' },
   { to: '/tramites', etiqueta: 'Trámites', icono: '🏛️' },
   { to: '/aula', etiqueta: 'Aula', icono: '📚' },
+  { to: '/familias', etiqueta: 'Familias', icono: '✉️' },
   { to: '/centro', etiqueta: 'Centro', icono: '🏫' },
+  { to: '/calendario', etiqueta: 'Calendario', icono: '📅' },
   { to: '/historial', etiqueta: 'Historial', icono: '🗂️' },
 ];
 

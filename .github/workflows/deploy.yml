@@ -23,7 +23,12 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - run: npm run build:pages
+      - name: Tipos (tsc)
+        run: npx tsc -b
+      - name: Tests
+        run: npx vitest run
+      - name: Build para GitHub Pages
+        run: npm run build:pages
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

@@ -30,7 +30,7 @@ const MODULOS = [
 ];
 
 export default function Home() {
-  const { perfil } = usePerfil();
+  const { perfil, guardar } = usePerfil();
   const { docs } = useHistorial();
   const ccaa = ccaaPorId(perfil.ccaa);
 
@@ -61,6 +61,32 @@ export default function Home() {
           <Link to="/perfil" className="font-semibold underline">
             Completar ahora →
           </Link>
+          {' · '}
+          <button
+            type="button"
+            onClick={() =>
+              guardar({
+                nombre: 'Ana',
+                apellidos: 'García López',
+                dni: '12345678Z',
+                ccaa: 'madrid',
+                cuerpo: 'Cuerpo de Profesores de Enseñanza Secundaria',
+                especialidad: 'Matemáticas',
+                centro: 'IES Ejemplo',
+                codCentro: '28078000',
+                localidad: 'Madrid',
+                provincia: 'Madrid',
+                email: 'ana@example.es',
+                telefono: '600 000 000',
+                fechaNombramiento: '2018-09-01',
+                regimen: 'publico',
+                funcionario: true,
+              })
+            }
+            className="font-semibold underline"
+          >
+            🧪 Probar con datos de ejemplo
+          </button>
         </Nota>
       ) : (
         <Nota tono="exito">

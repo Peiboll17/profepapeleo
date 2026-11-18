@@ -10,6 +10,7 @@ import {
   type DatosProgramacion,
 } from '../../data/programacion';
 import { ccaaPorId, marcoNormativoCcaa } from '../../data/ccaa';
+import { curriculoLiteralPorSemilla } from '../../data/curriculo';
 import { usePerfil } from '../../store/perfil';
 import { useHistorial } from '../../store/historial';
 import { useAjustes } from '../../store/ajustes';
@@ -97,6 +98,7 @@ export default function ProgramacionWizard() {
 
   const cambiarEtapa = (etapa: string) => {
     const primera = semillasPorEtapa(etapa)[0];
+    const lit = primera ? curriculoLiteralPorSemilla(primera.id) : undefined;
     setD((prev) => {
       const nuevaMateria = tocado.has('materia')
         ? prev.materia
@@ -118,10 +120,12 @@ export default function ProgramacionWizard() {
               ? ''
               : '4',
         introduccion: tocado.has('introduccion') ? prev.introduccion : textoIntroduccion(nuevaMateria, nuevoCurso),
+        fuenteCE: tocado.has('competenciasTexto') ? prev.fuenteCE : (lit?.fuente ?? ''),
         competenciasTexto: tocado.has('competenciasTexto')
           ? prev.competenciasTexto
-          : (primera?.competencias.join('\n') ??
-            '[Escribe aquí las competencias específicas de la materia —en FP, los resultados de aprendizaje del módulo—, una por línea]'),
+          : (lit?.competencias.join('\n') ??
+            (primera?.competencias.join('\n') ??
+              '[Escribe aquí las competencias específicas de la materia —en FP, los resultados de aprendizaje del módulo—, una por línea]')),
         saberesTexto: tocado.has('saberesTexto')
           ? prev.saberesTexto
           : (primera?.saberes.map((b) => `${b.bloque}: ${b.resumen}`).join('\n') ??
@@ -139,12 +143,16 @@ export default function ProgramacionWizard() {
   const cambiarSemilla = (idSemilla: string) => {
     const s = semillaPorId(idSemilla);
     if (!s) return;
+    const lit = curriculoLiteralPorSemilla(s.id);
     setD((prev) => ({
       ...prev,
       semillaId: idSemilla,
       materia: s.nombre,
       curso: tocado.has('curso') ? prev.curso : (s.cursos[0] ?? prev.curso),
-      competenciasTexto: tocado.has('competenciasTexto') ? prev.competenciasTexto : s.competencias.join('\n'),
+      fuenteCE: tocado.has('competenciasTexto') ? prev.fuenteCE : (lit?.fuente ?? ''),
+      competenciasTexto: tocado.has('competenciasTexto')
+        ? prev.competenciasTexto
+        : (lit?.competencias.join('\n') ?? s.competencias.join('\n')),
       saberesTexto: tocado.has('saberesTexto') ? prev.saberesTexto : s.saberes.map((b) => `${b.bloque}: ${b.resumen}`).join('\n'),
     }));
     setGuardado(false);
@@ -303,6 +311,14 @@ export default function ProgramacionWizard() {
               return (
                 <div key={c.id}>
                   <Campo campo={c} valor={String(d[clave] ?? '')} onChange={(v) => set(clave, v as string)} />
+                  {c.id === 'competenciasTexto' && d.fuenteCE && (
+                    <div className="-mt-2 mb-4">
+                      <Nota tono="exito">
+                        ✅ <b>Texto literal del currículo estatal</b> ({d.fuenteCE}) — la fuente aparece citada en el
+                        documento. Verifica el decreto de tu comunidad autónoma, que puede introducir adaptaciones.
+                      </Nota>
+                    </div>
+                  )}
                   {c.id === 'marcoNormativo' && ccaa && (
                     <div className="-mt-2 mb-4">
                       <Nota tono="info">

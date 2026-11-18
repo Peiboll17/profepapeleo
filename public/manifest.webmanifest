@@ -1,0 +1,19 @@
+{
+  "name": "ProfePapeleo — Tu papeleo docente en minutos",
+  "short_name": "ProfePapeleo",
+  "description": "Genera trámites, programaciones didácticas LOMLOE y documentos de centro en minutos. Tus datos no salen de tu navegador.",
+  "start_url": "/profepapeleo/",
+  "scope": "/profepapeleo/",
+  "display": "standalone",
+  "lang": "es",
+  "theme_color": "#0f766e",
+  "background_color": "#f5f5f4",
+  "icons": [
+    {
+      "src": "/profepapeleo/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ const RUTAS: Record<string, (subtipo: string) => string> = {
   acta: () => '/centro/acta',
   pga: () => '/centro/esqueleto?tipo=pga',
   memoria: () => '/centro/esqueleto?tipo=memoria',
+  familias: () => '/familias',
 };
 
 const NOMBRES: Record<string, string> = {
@@ -18,6 +19,7 @@ const NOMBRES: Record<string, string> = {
   acta: 'Acta',
   pga: 'PGA',
   memoria: 'Memoria',
+  familias: 'Familias',
 };
 
 export default function PaginaHistorial() {

@@ -12,6 +12,8 @@ import RubricaWizard from './pages/aula/RubricaWizard';
 import CentroLista from './pages/centro/CentroLista';
 import ActaWizard from './pages/centro/ActaWizard';
 import EsqueletoWizard from './pages/centro/EsqueletoWizard';
+import FamiliasWizard from './pages/familias/FamiliasWizard';
+import CalendarioPage from './pages/CalendarioPage';
 
 export default function App() {
   return (
@@ -29,6 +31,8 @@ export default function App() {
         <Route path="/centro" element={<CentroLista />} />
         <Route path="/centro/acta" element={<ActaWizard />} />
         <Route path="/centro/esqueleto" element={<EsqueletoWizard />} />
+        <Route path="/familias" element={<FamiliasWizard />} />
+        <Route path="/calendario" element={<CalendarioPage />} />
       </Route>
     </Routes>
   );

@@ -585,6 +585,8 @@ export interface DatosProgramacion {
   unidadesTexto: string;
   transversales: string;
   extraescolares: string;
+  /** Fuente citada de las competencias específicas (solo si el texto es literal del currículo estatal) */
+  fuenteCE: string;
 }
 
 export interface CtxProgramacion {
@@ -622,6 +624,7 @@ export function defectosProgramacion(ctx: CtxProgramacion): DatosProgramacion {
     unidadesTexto: Array.from({ length: 12 }, (_, i) => `Unidad ${i + 1}. [Título] | 12 sesiones`).join('\n'),
     transversales: `Se trabajarán de forma transversal la comprensión lectora, la expresión oral y escrita, la educación en valores (igualdad, convivencia y respeto), la educación emocional, la cultura emprendedora, la educación para la salud y el consumo responsable, y la competencia digital, en consonancia con los planes del centro.`,
     extraescolares: `[Enumera las actividades complementarias y extraescolares previstas: salidas, concursos, talleres, charlas…, con fechas aproximadas y relación con las unidades didácticas.]`,
+    fuenteCE: '',
   };
 }
 
@@ -685,12 +688,22 @@ export function construirProgramacion(
         [
           {
             t: 'p',
-            texto:
-              d.etapa === 'fp'
+            texto: d.fuenteCE
+              ? 'Competencias específicas de la materia:'
+              : d.etapa === 'fp'
                 ? 'Resultados de aprendizaje del módulo (resumen orientativo; contrasta con el Real Decreto del título):'
                 : 'Competencias específicas de la materia (resumen orientativo; contrasta con el currículo autonómico):',
           },
           { t: 'ol', items: li(d.competenciasTexto).map((l) => l.replace(/^CE\d+\.\s*/, '')) },
+          ...(d.fuenteCE
+            ? ([
+                {
+                  t: 'p',
+                  texto: `Texto de las competencias específicas conforme a ${d.fuenteCE}. Verifica el decreto de tu comunidad autónoma, que puede introducir adaptaciones.`,
+                  clase: 'muted',
+                },
+              ] as Bloque[])
+            : []),
         ],
       ),
       ...seccion(6, d.etapa === 'fp' ? 'Contenidos del módulo' : 'Saberes básicos', [

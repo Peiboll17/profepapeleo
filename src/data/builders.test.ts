@@ -3,6 +3,10 @@ import type { Perfil } from '../store/perfil';
 import { CCAA, ccaaPorId, decretoCurriculo, marcoNormativoCcaa } from './ccaa';
 import { TRAMITES, tramitePorId } from './tramites';
 import { SEMILLAS, construirProgramacion, defectosProgramacion, semillaPorId, semillasPorEtapa } from './programacion';
+import { CURRICULO_LITERAL } from './curriculo';
+import { DOCS_FAMILIAS, construirLoteFamilias } from './familias';
+import { HITOS_CURSO } from './calendario';
+import { generarIcs } from '../lib/ics';
 import { construirActa, construirCentroDoc, defectosActa, defectosCentroDoc } from './centro';
 
 const perfilFalso: Perfil = {
@@ -161,6 +165,69 @@ describe('normativa por CCAA', () => {
     const d = defectosProgramacion({ perfil: { ...perfilFalso, ccaa: 'madrid' } });
     expect(d.marcoNormativo).toContain('Decreto 65/2022');
     expect(d.marcoNormativo).toContain('−');
+  });
+});
+
+describe('familias', () => {
+  it('hay 4 documentos con id único', () => {
+    expect(DOCS_FAMILIAS).toHaveLength(4);
+    const ids = DOCS_FAMILIAS.map((d) => d.id);
+    expect(new Set(ids).size).toBe(4);
+  });
+
+  it('el lote genera una página por alumno sin datos residuales', () => {
+    const def = DOCS_FAMILIAS[0];
+    const { titulo, bloques } = construirLoteFamilias(
+      def,
+      ['Ana Pérez', 'Luis Soto'],
+      { fecha: '2026-11-18', asunto: 'Información', cuerpo: 'Texto del comunicado.', cursoGrupo: '3º A' },
+      perfilFalso,
+    );
+    expect(titulo).toContain('2 copias');
+    expect(bloques.filter((b) => b.t === 'salto')).toHaveLength(1);
+    const texto = JSON.stringify(bloques);
+    expect(texto).toContain('Ana Pérez');
+    expect(texto).toContain('Luis Soto');
+    expect(texto).toContain('IES Ejemplo');
+    expect(texto).toContain('Ana García López'); // firma del perfil
+  });
+});
+
+describe('currículo literal', () => {
+  it('cubre todas las materias de ESO del catálogo con el texto del RD 217/2022', () => {
+    const claves = Object.keys(CURRICULO_LITERAL);
+    expect(claves).toHaveLength(11);
+    for (const c of claves) {
+      expect(CURRICULO_LITERAL[c].fuente).toContain('RD 217/2022');
+      expect(CURRICULO_LITERAL[c].competencias.length).toBeGreaterThanOrEqual(4);
+    }
+    expect(CURRICULO_LITERAL['mat-eso'].competencias[0]).toContain('modelizar y resolver problemas');
+    expect(CURRICULO_LITERAL['lengua-eso'].competencias).toHaveLength(10);
+  });
+
+  it('el documento cita la fuente cuando se usa el texto literal', () => {
+    const base = defectosProgramacion({ perfil: perfilFalso });
+    const doc = construirProgramacion({ ...base, fuenteCE: 'RD 217/2022, anexo II' }, { perfil: perfilFalso });
+    expect(JSON.stringify(doc.bloques)).toContain('conforme a RD 217/2022');
+  });
+});
+
+describe('calendario', () => {
+  it('los hitos del curso tienen fechas ISO válidas', () => {
+    expect(HITOS_CURSO.length).toBeGreaterThanOrEqual(5);
+    for (const mes of HITOS_CURSO)
+      for (const h of mes.hitos) expect(h.fecha).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('el ICS generado contiene el calendario y los eventos escapados', () => {
+    const ics = generarIcs([
+      { nombre: 'Sesión de evaluación', descripcion: 'Con comas, y texto', fecha: '2027-06-09' },
+    ]);
+    expect(ics).toContain('BEGIN:VCALENDAR');
+    expect(ics).toContain('DTSTART;VALUE=DATE:20270609');
+    expect(ics).toContain('SUMMARY:Sesión de evaluación');
+    expect(ics).toContain('Con comas\\, y texto');
+    expect(ics).toContain('END:VCALENDAR');
   });
 });
 
